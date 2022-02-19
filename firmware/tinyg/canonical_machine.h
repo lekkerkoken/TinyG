@@ -273,9 +273,15 @@ typedef struct cmSingleton {			// struct to manage cm globals and cycles
 	magic_t magic_end;
 } cmSingleton_t;
 
+typedef struct cmToolTable {			// struct to keep a global tool table
+	float tt_offset[TOOLS+1][AXES];		// persistent tool table offsets
+} cmToolTable_t;
+
 /**** Externs - See canonical_machine.c for allocation ****/
 
 extern cmSingleton_t cm;				// canonical machine controller singleton
+extern cmToolTable_t tt;
+
 
 /*****************************************************************************
  * MACHINE STATE MODEL
@@ -359,7 +365,7 @@ enum cmFeedholdState {				// feedhold_state machine
 
 typedef enum {				        // buffers drain state machine
     DRAIN_OFF = 0,				    // no buffers drain in effect
-    DRAIN_REQUESTED,                // drain has not completed yet
+    DRAIN_REQUESTED,				// drain has not completed yet
 } cmBuffersDrainState;
 
 enum cmHomingState {				// applies to cm.homing_state
@@ -626,7 +632,7 @@ stat_t cm_set_path_control(uint8_t mode);						// G61, G61.1, G64
 
 // Machining Functions (4.3.6)
 stat_t cm_straight_feed(float target[], float flags[]);		    // G1
-stat_t cm_arc_feed(	float target[], float flags[],              // G2, G3
+stat_t cm_arc_feed(	float target[], float flags[],				// G2, G3
 					float i, float j, float k,
 					float radius, uint8_t motion_mode);
 stat_t cm_dwell(float seconds);									// G4, P parameter
@@ -714,6 +720,11 @@ stat_t cm_get_ofs(nvObj_t *nv);			// get runtime work offset...
 stat_t cm_run_qf(nvObj_t *nv);			// run queue flush
 stat_t cm_run_home(nvObj_t *nv);		// start homing cycle
 
+stat_t cm_get_tof(nvObj_t *nv);         // get tool offset
+stat_t cm_set_tof(nvObj_t *nv);         // set tool offset
+stat_t cm_get_tt(nvObj_t *nv);			// get tool table value
+stat_t cm_set_tt(nvObj_t *nv);			// set tool table value
+
 stat_t cm_dam(nvObj_t *nv);				// dump active model (debugging command)
 
 stat_t cm_run_jogx(nvObj_t *nv);		// start jogging cycle for x
@@ -758,6 +769,7 @@ stat_t cm_set_xjh(nvObj_t *nv);			// set jerk homing with 1,000,000 correction
 	void cm_print_pos(nvObj_t *nv);		// print runtime work position in prevailing units
 	void cm_print_mpo(nvObj_t *nv);		// print runtime work position always in MM units
 	void cm_print_ofs(nvObj_t *nv);		// print runtime work offset always in MM units
+	void cm_print_tof(nvObj_t *nv);		// print tool length offset
 
 	void cm_print_ja(nvObj_t *nv);		// global CM settings
 	void cm_print_ct(nvObj_t *nv);
@@ -815,6 +827,7 @@ stat_t cm_set_xjh(nvObj_t *nv);			// set jerk homing with 1,000,000 correction
 	#define cm_print_pos tx_print_stub		// print runtime work position in prevailing units
 	#define cm_print_mpo tx_print_stub		// print runtime work position always in MM uints
 	#define cm_print_ofs tx_print_stub		// print runtime work offset always in MM uints
+	#define cm_print_tof tx_print_stub		// print tool length offset
 
 	#define cm_print_ja tx_print_stub		// global CM settings
 	#define cm_print_ct tx_print_stub
