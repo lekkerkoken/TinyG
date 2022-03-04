@@ -254,7 +254,7 @@ void cm_set_model_linenum(uint32_t linenum)
  */
 
 /*
- * cm_get_active_coord_offset() - return the currently active coordinate offset for an axis
+ * cm_get_combined_offset() - return the currently active coordinate offset for an axis
  *
  *	Takes G5x, G92 and absolute override into account to return the active offset for this move
  *
@@ -262,7 +262,7 @@ void cm_set_model_linenum(uint32_t linenum)
  *	which merely returns what's in the work_offset[] array.
  */
 
-float cm_get_active_coord_offset(uint8_t axis)
+float cm_get_combined_offset(uint8_t axis)
 {
 	if (cm.gm.absolute_override == true) return (0);		// no offset if in absolute override mode
 	float offset = cm.coord_offset[cm.gm.coord_system][axis];
@@ -340,7 +340,7 @@ float cm_get_display_position(GCodeState_t *gcode_state, uint8_t axis)
 	float position;
 
 	if (gcode_state == MODEL) {
-		position = cm.gmx.position[axis] - cm_get_active_coord_offset(axis);
+		position = cm.gmx.position[axis] - cm_get_combined_offset(axis);
 	} else {
 		position = mp_get_runtime_display_position(axis);
 	}
@@ -446,7 +446,7 @@ void cm_set_model_target(float target[], float flag[])
 			continue;		// skip axis if not flagged for update or its disabled
 		} else if ((cm.a[axis].axis_mode == AXIS_STANDARD) || (cm.a[axis].axis_mode == AXIS_INHIBITED)) {
 			if (cm.gm.distance_mode == ABSOLUTE_MODE) {
-				cm.gm.target[axis] = cm_get_active_coord_offset(axis) + _to_millimeters(target[axis]);
+				cm.gm.target[axis] = cm_get_combined_offset(axis) + _to_millimeters(target[axis]);
 			} else {
 				cm.gm.target[axis] += _to_millimeters(target[axis]);
 			}
@@ -460,7 +460,7 @@ void cm_set_model_target(float target[], float flag[])
 			tmp = _calc_ABC(axis, target, flag);
 		}
 		if (cm.gm.distance_mode == ABSOLUTE_MODE) {
-			cm.gm.target[axis] = tmp + cm_get_active_coord_offset(axis); // sacidu93's fix to Issue #22
+			cm.gm.target[axis] = tmp + cm_get_combined_offset(axis); // sacidu93's fix to Issue #22
 		} else {
 			cm.gm.target[axis] += tmp;
 		}
@@ -684,24 +684,24 @@ stat_t cm_set_g10_data(const uint8_t P_word,
                 cm.deferred_write_flag = true;         // persist offsets once machining cycle is over
             }
         }
-    // }
-    // else if ((L_word == 1) || (L_word == 10)) {
-    //     if ((P_word < 1) || (P_word > TOOLS)) {         // tool table offset command. L11 not supported atm.
-    //         return (STAT_P_WORD_IS_INVALID);
-    //     }
-    //     for (uint8_t axis = AXIS_X; axis < AXES; axis++) {
-    //         if (flag[axis]) {
-    //             if (L_word == 1) {
-    //                 tt.tt_offset[P_word][axis] = _to_millimeters(offset[axis]);
-    //             } else {                                // L10 should also take into account G92 offset
-    //                 tt.tt_offset[P_word][axis] =
-    //                     cm.gmx.position[axis] - _to_millimeters(offset[axis]) -
-    //                     cm.coord_offset[cm->gm.coord_system][axis] -
-    //                     (cm.gmx.g92_offset[axis] * cm.gmx.g92_offset_enable);
-    //             }
-    //             cm->deferred_write_flag = true;         // persist offsets once machining cycle is over
-    //         }
-    //     }
+    }
+    else if ((L_word == 1) || (L_word == 10)) {
+        if ((P_word < 1) || (P_word > TOOLS)) {         // tool table offset command. L11 not supported atm.
+            return (STAT_P_WORD_IS_INVALID);
+        }
+        for (uint8_t axis = AXIS_X; axis < AXES; axis++) {
+            if (flag[axis]) {
+                if (L_word == 1) {
+                    tt.tt_offset[P_word][axis] = _to_millimeters(offset[axis]);
+                } else {                                // L10 should also take into account G92 offset
+                    tt.tt_offset[P_word][axis] =
+                        cm.gmx.position[axis] - _to_millimeters(offset[axis]) -
+                        cm.coord_offset[cm->gm.coord_system][axis] -
+                        (cm.gmx.origin_offset[axis] * cm.gmx.origin_offset_enable);
+                }
+                cm->deferred_write_flag = true;         // persist offsets once machining cycle is over
+            }
+        }
     }
     else {
         return (STAT_L_WORD_IS_INVALID);
@@ -864,7 +864,7 @@ stat_t cm_get_position()
 	// M114: Get current position, see https://www.reprap.org/wiki/G-code#M114:_Get_Current_Position
 	size_t len = 0;
 	for (uint8_t axis = AXIS_X; axis < AXES; axis++) {
-		float position = cm.gm.target[axis] - cm_get_active_coord_offset(axis);
+		float position = cm.gm.target[axis] - cm_get_combined_offset(axis);
 		len += sprintf(global_string_buf + len, "%c:%0.4f ", "XYZABC"[axis], position);
 	}
 	// Replace last trailing space with newline.
@@ -963,6 +963,39 @@ stat_t cm_goto_g30_position(float target[], float flags[])
 	while (mp_get_planner_buffers_available() == 0); // make sure you have an available buffer
 	float f[] = {1,1,1,1,1,1};
 	return(cm_straight_traverse(cm.gmx.g30_position, f));// execute actual stored move
+}
+
+/*****************************************************
+ **** TOOL TABLE AND OFFSET GET AND SET FUNCTIONS ****
+ *****************************************************/
+
+static uint8_t _tool(nvObj_t *nv)
+{
+    if (nv->group[0] != 0) {
+        return (atoi(&nv->group[2]));   // ttNN is the group, axis is in the token
+    }
+    return (atoi(&nv->token[2]));       // ttNNx is all in the token
+}
+
+stat_t cm_get_tof(nvObj_t *nv) { return (get_float(nv, cm->tool_offset[_axis(nv)])); }
+stat_t cm_set_tof(nvObj_t *nv) { return (set_float(nv, cm->tool_offset[_axis(nv)])); }
+
+stat_t cm_get_tt(nvObj_t *nv)
+{
+    uint8_t toolnum = _tool(nv);
+    if (toolnum > TOOLS) {
+        return (STAT_INPUT_EXCEEDS_MAX_VALUE);
+    }
+    return (get_float(nv, tt.tt_offset[toolnum][_axis(nv)]));
+}
+
+stat_t cm_set_tt(nvObj_t *nv)
+{
+    uint8_t toolnum = _tool(nv);
+    if (toolnum > TOOLS) {
+        return (STAT_INPUT_EXCEEDS_MAX_VALUE);
+    }
+    return(set_float(nv, tt.tt_offset[toolnum][_axis(nv)]));
 }
 
 /********************************
@@ -2081,6 +2114,8 @@ void cm_print_cpos(nvObj_t *nv) { _print_axis_coord_flt(nv, fmt_cpos);}
 void cm_print_pos(nvObj_t *nv) { _print_pos(nv, fmt_pos, cm_get_units_mode(MODEL));}
 void cm_print_mpo(nvObj_t *nv) { _print_pos(nv, fmt_mpo, MILLIMETERS);}
 void cm_print_ofs(nvObj_t *nv) { _print_pos(nv, fmt_ofs, MILLIMETERS);}
+
+void cm_print_tof(nvObj_t *nv) { _print_pos(nv, fmt_tof, MILLIMETERS);}
 
 #endif // __TEXT_MODE
 /*

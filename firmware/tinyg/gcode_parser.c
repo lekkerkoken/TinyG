@@ -298,8 +298,15 @@ static stat_t _parse_gcode_block(char_t *buf)
 					break;
 				}
 				case 40: break;	// ignore cancel cutter radius compensation
-				case 49: break;	// ignore cancel tool length offset comp.
-				case 53: SET_NON_MODAL (absolute_override, true);
+                case 43: {
+                    switch (_point(value)) {
+                        case 0: SET_NON_MODAL (next_action, NEXT_ACTION_SET_TL_OFFSET);
+                        case 2: SET_NON_MODAL (next_action, NEXT_ACTION_SET_ADDITIONAL_TL_OFFSET);
+                        default: status = STAT_GCODE_COMMAND_UNSUPPORTED;
+                    }
+                    break;
+                }
+				case 49: SET_NON_MODAL (next_action, NEXT_ACTION_CANCEL_TL_OFFSET);				case 53: SET_NON_MODAL (absolute_override, true);
 				case 54: SET_MODAL (MODAL_GROUP_G12, coord_system, G54);
 				case 55: SET_MODAL (MODAL_GROUP_G12, coord_system, G55);
 				case 56: SET_MODAL (MODAL_GROUP_G12, coord_system, G56);

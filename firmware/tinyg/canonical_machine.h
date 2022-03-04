@@ -396,6 +396,14 @@ enum cmNextAction {						// these are in order to optimized CASE statement
 	NEXT_ACTION_HOMING_NO_SET,			// G28.4 homing cycle with no coordinate setting
 	NEXT_ACTION_GOTO_G30_POSITION,		// G30
 	NEXT_ACTION_SET_G30_POSITION,		// G30.1
+    NEXT_ACTION_SET_TL_OFFSET,                  // G43
+    NEXT_ACTION_SET_ADDITIONAL_TL_OFFSET,       // G43.2
+    NEXT_ACTION_CANCEL_TL_OFFSET,               // G49
+	NEXT_ACTION_SET_ORIGIN_OFFSETS,		// G92
+	NEXT_ACTION_RESET_ORIGIN_OFFSETS,	// G92.1
+	NEXT_ACTION_SUSPEND_ORIGIN_OFFSETS,	// G92.2
+	NEXT_ACTION_RESUME_ORIGIN_OFFSETS,	// G92.3
+	NEXT_ACTION_DWELL,					// G4
 	NEXT_ACTION_STRAIGHT_PROBE,			// G38.2
 	NEXT_ACTION_SET_G92_OFFSETS,		// G92
 	NEXT_ACTION_RESET_G92_OFFSETS,	// G92.1
@@ -570,9 +578,10 @@ void cm_set_absolute_override(GCodeState_t *gcode_state, uint8_t absolute_overri
 void cm_set_model_linenum(uint32_t linenum);
 
 // Coordinate systems and offsets
-float cm_get_active_coord_offset(uint8_t axis);
+float cm_get_combined_offset(uint8_t axis);
 float cm_get_display_offset(GCodeState_t *gcode_state, uint8_t axis);
 void cm_set_display_offsets(GCodeState_t *gcode_state);
+
 float cm_get_absolute_position(GCodeState_t *gcode_state, uint8_t axis);
 float cm_get_display_position(GCodeState_t *gcode_state, uint8_t axis);
 
