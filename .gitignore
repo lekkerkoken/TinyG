@@ -4,3 +4,4 @@ firmware/tinyg/Release/Makefile
 firmware/tinyg/Release/makedep.mk
 firmware/tinyg/default/path
 tinyg.hex
+firmware/tinyg/settings/settings_shapeoko2_den_haag.h
