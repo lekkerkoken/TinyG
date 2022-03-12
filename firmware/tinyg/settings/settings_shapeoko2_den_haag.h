@@ -60,7 +60,7 @@
 #define M1_STEP_ANGLE			1.8		// 1sa
 #define M1_TRAVEL_PER_REV		40.00	// 1tr
 #define M1_MICROSTEPS			8		// 1mi		1,2,4,8
-#define M1_POLARITY				1		// 1po		0=normal, 1=reversed
+#define M1_POLARITY				0		// 1po		0=normal, 1=reversed
 #define M1_POWER_MODE			2		// 1pm		TRUE=low power idle enabled
 
 #define M2_MOTOR_MAP			AXIS_Y  // Y1 - left side of machine
@@ -70,18 +70,18 @@
 #define M2_POLARITY				1
 #define M2_POWER_MODE			2
 
-#define M3_MOTOR_MAP			AXIS_Z  // Y2 - right sif of machine
+#define M3_MOTOR_MAP			AXIS_Z  
 #define M3_STEP_ANGLE			1.8
 #define M3_TRAVEL_PER_REV		1.25
 #define M3_MICROSTEPS			8
-#define M3_POLARITY				0
+#define M3_POLARITY				1
 #define M3_POWER_MODE			2
 
-#define M4_MOTOR_MAP			AXIS_Z
+#define M4_MOTOR_MAP			AXIS_Y // Y2 - right sif of machine
 #define M4_STEP_ANGLE			1.8
 #define M4_TRAVEL_PER_REV		40
 #define M4_MICROSTEPS			8
-#define M4_POLARITY				1
+#define M4_POLARITY				0
 #define M4_POWER_MODE			2
 
 #define M5_MOTOR_MAP			AXIS_DISABLED
@@ -106,11 +106,11 @@
 #define X_VELOCITY_MAX			16000 				// xvm		G0 max velocity in mm/min
 #define X_FEEDRATE_MAX			X_VELOCITY_MAX		// xfr 		G1 max feed rate in mm/min
 #define X_TRAVEL_MIN			0					// xtn		minimum travel
-#define X_TRAVEL_MAX			760					// xtm		maximum travel (travel between switches or crashes)
+#define X_TRAVEL_MAX			730					// xtm		maximum travel (travel between switches or crashes)
 #define X_JERK_MAX				5000				// xjm		yes, that's "5 billion" mm/(min^3)
 #define X_JERK_HOMING			10000				// xjh
 #define X_JUNCTION_DEVIATION	JUNCTION_DEVIATION	// xjd
-#define X_SWITCH_MODE_MIN		SW_MODE_HOMING		// xsn		SW_MODE_DISABLED, SW_MODE_HOMING, SW_MODE_LIMIT, SW_MODE_HOMING_LIMIT
+#define X_SWITCH_MODE_MIN		SW_MODE_HOMING_LIMIT		// xsn		SW_MODE_DISABLED, SW_MODE_HOMING, SW_MODE_LIMIT, SW_MODE_HOMING_LIMIT
 #define X_SWITCH_MODE_MAX 		SW_MODE_DISABLED	// xsx		SW_MODE_DISABLED, SW_MODE_HOMING, SW_MODE_LIMIT, SW_MODE_HOMING_LIMIT
 #define X_SEARCH_VELOCITY		3000				// xsv		minus means move to minimum switch
 #define X_LATCH_VELOCITY		100					// xlv		mm/min
@@ -121,11 +121,11 @@
 #define Y_VELOCITY_MAX			16000
 #define Y_FEEDRATE_MAX			Y_VELOCITY_MAX
 #define Y_TRAVEL_MIN			0
-#define Y_TRAVEL_MAX			790
+#define Y_TRAVEL_MAX			800
 #define Y_JERK_MAX				5000
 #define Y_JERK_HOMING			10000				// xjh
 #define Y_JUNCTION_DEVIATION	JUNCTION_DEVIATION
-#define Y_SWITCH_MODE_MIN		SW_MODE_HOMING
+#define Y_SWITCH_MODE_MIN		SW_MODE_HOMING_LIMIT
 #define Y_SWITCH_MODE_MAX		SW_MODE_DISABLED
 #define Y_SEARCH_VELOCITY		3000
 #define Y_LATCH_VELOCITY		100
