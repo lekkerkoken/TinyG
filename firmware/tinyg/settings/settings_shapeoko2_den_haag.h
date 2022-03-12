@@ -56,14 +56,14 @@
 
 // *** motor settings ***
 
-#define M1_MOTOR_MAP 			AXIS_X	// 1ma
+#define M1_MOTOR_MAP 			AXIS_Y	// 1ma  Y1 - left side of machine
 #define M1_STEP_ANGLE			1.8		// 1sa
 #define M1_TRAVEL_PER_REV		40.00	// 1tr
 #define M1_MICROSTEPS			8		// 1mi		1,2,4,8
 #define M1_POLARITY				0		// 1po		0=normal, 1=reversed
 #define M1_POWER_MODE			2		// 1pm		TRUE=low power idle enabled
 
-#define M2_MOTOR_MAP			AXIS_Y  // Y1 - left side of machine
+#define M2_MOTOR_MAP			AXIS_X  // 
 #define M2_STEP_ANGLE			1.8
 #define M2_TRAVEL_PER_REV		40.00
 #define M2_MICROSTEPS			8
