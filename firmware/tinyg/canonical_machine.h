@@ -118,7 +118,6 @@ typedef struct GCodeStateExtended {		// Gcode dynamic state extensions - used by
 	float position[AXES];				// XYZABC model position (Note: not used in gn or gf)
 	float g92_offset[AXES];				// XYZABC G92 offsets (Note: not used in gn or gf)
 	float g28_position[AXES];			// XYZABC stored machine position for G28
-	float g30_position[AXES];			// XYZABC stored machine position for G30
 
 	float feed_rate_override_factor;	// 1.0000 x F feed rate. Go up or down from there
 	float traverse_override_factor;		// 1.0000 x traverse rate. Go down from there
@@ -235,6 +234,7 @@ typedef struct cmSingleton {			// struct to manage cm globals and cycles
 
 	// coordinate systems and offsets
 	float coord_offset[COORDS+1][AXES];	// persistent coordinate offsets: absolute (G53) + G54,G55,G56,G57,G58,G59
+	float g30_position[AXES];
 	float tool_offset[AXES];            // current tool offset
 
 
