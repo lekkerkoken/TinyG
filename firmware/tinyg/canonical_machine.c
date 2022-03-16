@@ -937,7 +937,7 @@ stat_t cm_straight_traverse(float target[], float flags[])
 
 stat_t cm_set_g28_position(void)
 {
-	copy_vector(cm.gmx.g28_position, cm.gmx.position);
+	copy_vector(cm.g28_position, cm.gmx.position);
 	return (STAT_OK);
 }
 
@@ -947,7 +947,7 @@ stat_t cm_goto_g28_position(float target[], float flags[])
 	cm_straight_traverse(target, flags);			 // move through intermediate point, or skip
 	while (mp_get_planner_buffers_available() == 0); // make sure you have an available buffer
 	float f[] = {1,1,1,1,1,1};
-	return(cm_straight_traverse(cm.gmx.g28_position, f));// execute actual stored move
+	return(cm_straight_traverse(cm.g28_position, f));// execute actual stored move
 }
 
 stat_t cm_set_g30_position(void)

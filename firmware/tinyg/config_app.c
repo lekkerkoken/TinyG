@@ -439,12 +439,12 @@ const cfgItem_t cfgArray[] PROGMEM = {
 	{ "g92","g92c",_fipc, 3, cm_print_cofs, get_flt, set_nul,(float *)&cm.gmx.g92_offset[AXIS_C], 0 },
 
 	// Coordinate positions (G28, G30)
-	{ "g28","g28x",_fipc, 3, cm_print_cpos, get_flt, set_nul,(float *)&cm.gmx.g28_position[AXIS_X], 0 },// g28 handled differently
-	{ "g28","g28y",_fipc, 3, cm_print_cpos, get_flt, set_nul,(float *)&cm.gmx.g28_position[AXIS_Y], 0 },
-	{ "g28","g28z",_fipc, 3, cm_print_cpos, get_flt, set_nul,(float *)&cm.gmx.g28_position[AXIS_Z], 0 },
-	{ "g28","g28a",_fipc, 3, cm_print_cpos, get_flt, set_nul,(float *)&cm.gmx.g28_position[AXIS_A], 0 },
-	{ "g28","g28b",_fipc, 3, cm_print_cpos, get_flt, set_nul,(float *)&cm.gmx.g28_position[AXIS_B], 0 },
-	{ "g28","g28c",_fipc, 3, cm_print_cpos, get_flt, set_nul,(float *)&cm.gmx.g28_position[AXIS_C], 0 },
+	{ "g28","g28x",_fipc, 3, cm_print_cpos, get_flt, set_nul,(float *)&cm.g28_position[AXIS_X], 0 },// g28 handled differently
+	{ "g28","g28y",_fipc, 3, cm_print_cpos, get_flt, set_nul,(float *)&cm.g28_position[AXIS_Y], 0 },
+	{ "g28","g28z",_fipc, 3, cm_print_cpos, get_flt, set_nul,(float *)&cm.g28_position[AXIS_Z], 0 },
+	{ "g28","g28a",_fipc, 3, cm_print_cpos, get_flt, set_nul,(float *)&cm.g28_position[AXIS_A], 0 },
+	{ "g28","g28b",_fipc, 3, cm_print_cpos, get_flt, set_nul,(float *)&cm.g28_position[AXIS_B], 0 },
+	{ "g28","g28c",_fipc, 3, cm_print_cpos, get_flt, set_nul,(float *)&cm.g28_position[AXIS_C], 0 },
 
 	{ "g30","g30x",_fipc, 3, cm_print_cpos, get_flt, set_flu,(float *)&cm.g30_position[AXIS_X], 0 },// g30 handled differently
 	{ "g30","g30y",_fipc, 3, cm_print_cpos, get_flt, set_flu,(float *)&cm.g30_position[AXIS_Y], 0 },
