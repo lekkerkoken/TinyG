@@ -104,9 +104,6 @@ static const char PROGMEM SR_DEFAULTS[] = "line,posx,posy,posz,posa,feed,vel,uni
 #undef JSON_VERBOSITY
 #define JSON_VERBOSITY 			JV_VERBOSE
 
-#undef SWITCH_TYPE
-#define SWITCH_TYPE 			SW_TYPE_NORMALLY_CLOSED	// one of: SW_TYPE_NORMALLY_OPEN, SW_TYPE_NORMALLY_CLOSED
-
 #define M1_MOTOR_MAP 			AXIS_Y	// 1ma  Y1 - left side of machine
 #define M1_STEP_ANGLE			1.8		// 1sa
 #define M1_TRAVEL_PER_REV		40.00	// 1tr
